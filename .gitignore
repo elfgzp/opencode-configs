@@ -1,0 +1,15 @@
+# API Keys and Secrets
+*.key
+*.secret
+.env
+.env.local
+
+# Node modules
+node_modules/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

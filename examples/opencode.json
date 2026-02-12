@@ -1,0 +1,38 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "_comment": "OpenCode 配置文件 - 支持 Kimi For Coding 和 MiniMax",
+  "model": "kimi/kimi-for-coding",
+  "plugin": [
+    "oh-my-opencode@latest",
+    "./plugins/user-agent.js"
+  ],
+  "provider": {
+    "kimi": {
+      "models": {
+        "kimi-for-coding": {
+          "name": "Kimi For Coding"
+        }
+      },
+      "name": "Kimi For Coding",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "apiKey": "sk-kimi-your-api-key-here",
+        "baseURL": "https://api.kimi.com/coding/v1",
+        "_comment": "注意：路径必须是 /coding/v1，不是 /v1"
+      }
+    },
+    "minimax": {
+      "models": {
+        "MiniMax-M2.1": {
+          "name": "MiniMax M2.1"
+        }
+      },
+      "name": "MiniMax",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "apiKey": "eyJhbGci...your-jwt-token-here",
+        "baseURL": "https://api.minimaxi.com/v1"
+      }
+    }
+  }
+}
