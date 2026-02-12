@@ -4,9 +4,12 @@
 
 ## 目录
 
+- [🚀 一键安装](#-一键安装推荐)
+- [使用方法](#使用方法)
 - [Kimi For Coding](#kimi-for-coding)
 - [MiniMax](#minimax)
 - [配置参考](#配置参考)
+- [AI 助手配置指南](#ai-助手配置指南)
 
 ---
 
@@ -28,9 +31,9 @@ Kimi For Coding 与普通 Kimi 模型不同，它有特殊的访问限制：
 
 ❌ 错误: `https://api.kimi.com/v1` - 会返回 404
 
-#### 2. 设置 User-Agent
+#### 2. 设置 User-Agent 和 X-Msh Headers
 
-由于 Kimi For Coding 会检查 User-Agent，需要在 plugin 中设置：
+由于 Kimi For Coding 会检查 User-Agent，且用量翻倍活动需要识别 CLI 客户端，需要在 plugin 中设置完整的请求头：
 
 **创建 plugin 文件** `~/.config/opencode/plugins/user-agent.js`:
 
@@ -40,12 +43,21 @@ export const UserAgentPlugin = async () => {
     "chat.headers": async (_input, output) => {
       output.headers = {
         ...output.headers,
-        "User-Agent": "claude-code/0.1"
+        "User-Agent": "KimiCLI/1.12.0",
+        "X-Msh-Platform": "kimi_cli",
+        "X-Msh-Version": "1.12.0",
+        // ... 其他 headers
       };
     }
   };
 };
 ```
+
+**我们提供的增强版 plugin 会自动：**
+- ✅ 从 PyPI 动态获取 kimi-cli 最新版本号（带24小时缓存）
+- ✅ 自动设置 X-Msh-Platform: kimi_cli（用量翻倍的关键）
+- ✅ 生成稳定的设备 ID 和设备信息
+- ✅ 支持环境变量 `KIMI_CLI_VERSION` 手动覆盖版本号
 
 #### 3. 完整配置示例
 
@@ -165,29 +177,136 @@ interface OpenCodeProviderConfig {
 }
 ```
 
-### Plugin 开发
+### Plugin 开发与用量翻倍原理
 
-OpenCode 支持通过 plugin 扩展功能，可用钩子：
+本仓库的 `user-agent.js` 插件通过 `chat.headers` 钩子修改请求头，模拟官方 kimi-cli 客户端：
 
-- `chat.headers`: 修改请求头
-- `experimental.chat.system.transform`: 修改系统提示
-- `permission.ask`: 权限请求处理
-- `tool.execute.before`: 工具执行前钩子
+```javascript
+export const UserAgentPlugin = async () => {
+  return {
+    "chat.headers": async (_input, output) => {
+      output.headers = {
+        ...output.headers,
+        "User-Agent": "KimiCLI/1.12.0",
+        "X-Msh-Platform": "kimi_cli",      // ← 用量翻倍关键字段
+        "X-Msh-Version": "1.12.0",
+        "X-Msh-Device-Id": "...",
+      };
+    }
+  };
+};
+```
+
+**可用的 Plugin 钩子：**
+
+| 钩子 | 用途 |
+|------|------|
+| `chat.headers` | 修改 API 请求头 |
+| `experimental.chat.system.transform` | 修改系统提示 |
+| `permission.ask` | 权限请求处理 |
+| `tool.execute.before` | 工具执行前钩子 |
+
+**自定义版本号：**
+
+```bash
+# 临时使用其他版本号
+export KIMI_CLI_VERSION="1.11.0"
+opencode --model kimi/kimi-for-coding
+```
 
 ---
 
-## 快速开始
+## 🚀 一键安装（推荐）
 
-1. 复制 `examples/opencode.json` 到 `~/.config/opencode/`
-2. 复制 `examples/plugins/user-agent.js` 到 `~/.config/opencode/plugins/`
-3. 替换 API Key
-4. 运行 `opencode --model kimi/kimi-for-coding`
+### 方法 1：交互式安装脚本
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/elfgzp/opencode-configs/main/scripts/install.sh | bash
+```
+
+脚本会自动：
+- ✅ 检测 OpenCode 是否安装
+- ✅ 询问要配置的模型（Kimi/MiniMax/两者）
+- ✅ 获取 API Key（可稍后填写）
+- ✅ 自动生成配置文件
+- ✅ 安装 User-Agent 插件（用量翻倍必备）
+- ✅ 验证配置
+
+### 方法 2：手动复制配置
+
+如果一键脚本无法满足需求，可以手动配置：
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/elfgzp/opencode-configs.git
+cd opencode-configs
+
+# 2. 复制配置文件
+mkdir -p ~/.config/opencode/plugins
+cp examples/opencode.json ~/.config/opencode/
+cp examples/plugins/user-agent.js ~/.config/opencode/plugins/
+
+# 3. 编辑配置文件，填入你的 API Key
+vim ~/.config/opencode/opencode.json
+
+# 4. 启动 OpenCode
+opencode --model kimi/kimi-for-coding
+```
 
 ---
+
+## 使用方法
+
+### 启动 OpenCode
+
+```bash
+# 使用 Kimi For Coding（支持用量翻倍活动）
+opencode --model kimi/kimi-for-coding
+
+# 使用 MiniMax
+opencode --model minimax/MiniMax-M2.1
+
+# 在项目中直接运行（使用默认模型）
+cd your-project
+opencode
+```
+
+### 查看配置
+
+```bash
+# 查看 OpenCode 配置
+opencode debug config
+
+# 查看配置路径
+opencode debug paths
+```
+
+---
+
+## AI 助手配置指南
+
+如果你是 AI 助手（如 Claude、Kimi、ChatGPT 等），正在帮助用户配置 OpenCode，请参考 [CONFIGURE.md](./CONFIGURE.md) 获取详细的配置步骤和命令。
+
+## 用量翻倍活动说明
+
+使用 Kimi For Coding 时，通过本配置可支持 **Kimi CLI 用量翻倍活动**：
+
+- **关键 Header**: `X-Msh-Platform: kimi_cli`
+- **实现方式**: User-Agent 插件自动添加所有必要的 headers
+- **验证方式**: 查看 `~/.config/opencode/plugins/user-agent.js` 文件
+
+## 文件说明
+
+| 文件/目录 | 说明 |
+|----------|------|
+| `examples/opencode.json` | OpenCode 配置文件模板 |
+| `examples/plugins/user-agent.js` | User-Agent 插件（用量翻倍必备） |
+| `scripts/install.sh` | 一键安装脚本 |
+| `CONFIGURE.md` | AI 助手配置指南 |
 
 ## 相关链接
 
 - [OpenCode 官网](https://opencode.ai)
 - [Kimi For Coding 文档](https://www.kimi.com/coding/docs/)
 - [MiniMax 平台](https://platform.minimaxi.com)
-- [cc-switch 项目](../cc-switch/)
+- [Kimi CLI PyPI](https://pypi.org/project/kimi-cli/)

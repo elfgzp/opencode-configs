@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "_comment": "OpenCode 配置文件 - 支持 Kimi For Coding 和 MiniMax",
+  "_comment": "OpenCode 配置文件 - 支持 Kimi For Coding 和 MiniMax，优化用量翻倍活动支持",
   "model": "kimi/kimi-for-coding",
   "plugin": [
     "oh-my-opencode@latest",
@@ -19,7 +19,8 @@
         "apiKey": "sk-kimi-your-api-key-here",
         "baseURL": "https://api.kimi.com/coding/v1",
         "_comment": "注意：路径必须是 /coding/v1，不是 /v1"
-      }
+      },
+      "_comment_headers": "注意：OpenCode 当前版本可能不支持 provider 级别的 headers，请依赖 user-agent.js plugin"
     },
     "minimax": {
       "models": {
