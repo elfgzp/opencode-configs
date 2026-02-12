@@ -285,7 +285,21 @@ opencode debug paths
 
 ## AI 助手配置指南
 
-如果你是 AI 助手（如 Claude、Kimi、ChatGPT 等），正在帮助用户配置 OpenCode，请参考 [CONFIGURE.md](./CONFIGURE.md) 获取详细的配置步骤和命令。
+如果你是 AI 助手（如 Claude、Kimi、ChatGPT 等），正在帮助用户配置 OpenCode：
+
+### 方法 1：读取配置指南（推荐）
+
+```bash
+# AI 助手下载配置指南
+curl -fsSL -o /tmp/llm_guide.md https://raw.githubusercontent.com/elfgzp/opencode-configs/main/LLM_CONFIG_GUIDE.md
+
+# 然后读取 /tmp/llm_guide.md 内容，按步骤帮用户配置
+cat /tmp/llm_guide.md
+```
+
+### 方法 2：参考完整文档
+
+查看 [CONFIGURE.md](./CONFIGURE.md) 获取详细的配置说明。
 
 ## 用量翻倍活动说明
 
